@@ -1,0 +1,25 @@
+x-shared-networks: &shared-networks
+  networks:
+    - config
+
+services:
+  garmani:
+    container_name: garmani
+    build:
+      context: .
+      target: development
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.garmani.rule=Host(`garmani.localtest.me`)"
+      - "traefik.http.routers.garmani.entrypoints=websecure"
+      - "traefik.http.routers.garmani.tls=true"
+      - "traefik.http.routers.garmani.tls.certresolver=myresolver"
+      - "traefik.http.services.garmani.loadbalancer.server.port=3000"
+    volumes:
+      - .:/app
+      - /app/node_modules
+    <<: *shared-networks
+
+networks:
+  config:
+    external: true
